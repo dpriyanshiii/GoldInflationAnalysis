@@ -1,0 +1,30 @@
+gates i need to check
+--------THE OBJECTIVE------
+inflation and gold correlation with major socio-economic hiccups (india specific).
+----------------------------
+
+datasets? 
+gold price from April 1990 to Sept 2025
+cpi raw (not calculated yet) from Jan 2013 to Oct 2025
+
+timeline?
+Jan 2013 till Sept 2025
+
+what are the major events?
+---look into it later----
+
+
+from openpyxl import load_workbook as loadGold
+gold = loadGold("../raw data/gold.xlsx")
+sheet = gold.active
+print("Successfully Loaded file: ", sheet.title)
+
+and i finally finally get to start writing code to extract data!!!
+
+got my first extracted and cleaned data!!
+
+i will need to merge it and make teh final dataset later on ig.
+
+-----basket ratiossssss-------
+to be figured out, study first
+------------------------------

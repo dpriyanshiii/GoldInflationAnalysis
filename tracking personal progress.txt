@@ -1,0 +1,25 @@
+set my mind on a specific ps, inspired by a ray dalio vid
+figured out what datasets i need
+downloaded pandas numpy matplotlib seaborn and numpy libs
+python environment was not compatible
+reconfigured/installed python enviroment
+got a dataset off Kaggle
+saturated asf
+got another from rbi official page
+figured both data sets need to be from same place
+so rbi it is
+set up git repo (datasets, python test file and folder struct)
+now figuring out how to move forward
+downloaded openpyxl lib 
+downloaded "notebook" lib and jupyter finally runs
+made a new file into code folder named analysis.ipynb
+made the first cell which checks libraries
+figuring out jupyter and excel files and openpyxl to code
+figured out/learnt how to write basic code snippets ot interact with data
+dealing with gold excel file. loaded the data into python
+few cells are a mess
+(its 4am and i need to sleep)
+fixed the count for extracting gold data
+extracted gold data, formatting and storing left
+made the gold dataframe, gold.xlsx not needed anymore
+making clean gold data sheet is left, but first priority is contructing efficient basket for cpi (for dataframe 2)
