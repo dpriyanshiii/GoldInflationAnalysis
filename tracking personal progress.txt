@@ -26,3 +26,7 @@ making clean gold data sheet is left, but first priority is constructing efficie
 variables decided for inflation
 dataframe 2 complete
 deciding how to manage multiple jupyter notebooks
+merged all extraction in single notebook
+also made a single new merged dataframe along with those two
+made all the csv and excel files from dataframes
+extraction officially complete!
