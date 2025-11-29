@@ -28,3 +28,19 @@ i will need to merge it and make teh final dataset later on ig.
 -----basket ratiossssss-------
 to be figured out, study first
 ------------------------------
+
+#dataframe syntax learning
+g = pd.DataFrame(gvalues, columns = ["Gold Price (Rs.)"])
+print(g)
+
+
+the six categories i finally decided on:
+A) General Index
+A.1) Food and beverages
+A.4) Housing
+A.5) Fuel and light
+A.6) Miscellaneous
+A.6.3) Transport and communication
+
+
+all the data is finallyyyyyyy extracted! now we store the df properly :)
