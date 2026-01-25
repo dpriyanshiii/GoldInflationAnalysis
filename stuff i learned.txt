@@ -1,0 +1,17 @@
+okay what library i used?
+pandas to make dataframes
+on=penpyxl to use excel sheets
+numpy for idkkk
+matplotlib for graphs
+
+the how to?
+fetch from files
+sort and fix needed data in df
+make new files of the said df
+make graphs
+
+personal note:
+getdata is where i get the clean data
+fix data is where i make the data presentable for graph/s
+
+find good points to plot and learn how and what to infer from data

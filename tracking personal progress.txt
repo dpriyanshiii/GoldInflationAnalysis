@@ -30,3 +30,18 @@ merged all extraction in single notebook
 also made a single new merged dataframe along with those two
 made all the csv and excel files from dataframes
 extraction officially complete!
+sorted gold data and added inflation rate
+checked sanity of my data by making graphs (matplotlib) via gpt
+my data was indeed insane
+corrected it
+calculated cumulative inflation but now it feels redundant ;-;
+not sure what i am doing
+
+i am backkkk
+have to rebase all data before i can continue
+
+made new df, rebased, stored in sheet, plotted
+
+made the graph but idk what i am doing atp like tf what do i even infer ;-;
+
+will look into it tmrw
