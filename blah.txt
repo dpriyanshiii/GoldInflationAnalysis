@@ -1,0 +1,183 @@
+import { useState, useEffect, useRef } from "react";
+import { LayoutShell } from "@/components/layout-shell";
+import { useFocusHistory, useStartFocus, useStopFocus } from "@/hooks/use-focus";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Play, Square, History, Timer } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { formatDistanceToNow } from "date-fns";
+
+const FOCUS_DURATION = 25 * 60; // 25 minutes
+
+export default function FocusPage() {
+  const [timeLeft, setTimeLeft] = useState(FOCUS_DURATION);
+  const [isActive, setIsActive] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { data: history, isLoading: historyLoading } = useFocusHistory();
+  const startMutation = useStartFocus();
+  const stopMutation = useStopFocus();
+
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      intervalRef.current = setInterval(() => {
+        setTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (timeLeft === 0 && isActive) {
+      handleStop();
+    }
+
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [isActive, timeLeft]);
+
+  const handleStart = () => {
+    startMutation.mutate(
+      { duration: Math.floor(FOCUS_DURATION / 60) },
+      {
+        onSuccess: (data) => {
+          setCurrentSessionId(data.id);
+          setIsActive(true);
+        },
+      }
+    );
+  };
+
+  const handleStop = () => {
+    setIsActive(false);
+    setTimeLeft(FOCUS_DURATION);
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    
+    if (currentSessionId) {
+      stopMutation.mutate(currentSessionId);
+      setCurrentSessionId(null);
+    }
+  };
+
+  const progress = ((FOCUS_DURATION - timeLeft) / FOCUS_DURATION) * 100;
+  const minutes = Math.floor(timeLeft / 60);
+  const seconds = timeLeft % 60;
+  const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+  return (
+    <LayoutShell>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Timer Section */}
+        <div className="flex flex-col items-center justify-center space-y-8 p-8 md:p-12 rounded-3xl bg-card border shadow-lg relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
+          
+          <h2 className="text-3xl font-display font-bold text-foreground relative z-10">Deep Focus</h2>
+          
+          <div className="relative w-64 h-64 md:w-80 md:h-80 flex items-center justify-center">
+            {/* Background Ring */}
+            <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+              <circle
+                cx="50%"
+                cy="50%"
+                r="45%"
+                className="stroke-muted fill-none stroke-[8px]"
+              />
+              {/* Progress Ring */}
+              <circle
+                cx="50%"
+                cy="50%"
+                r="45%"
+                className="stroke-primary fill-none stroke-[8px] transition-all duration-1000 ease-linear"
+                strokeLinecap="round"
+                strokeDasharray={`${2 * Math.PI * 45}%`}
+                strokeDashoffset={`${2 * Math.PI * 45 * (1 - progress / 100)}%`}
+              />
+            </svg>
+            
+            <div className="text-6xl md:text-7xl font-mono font-bold tracking-tighter text-foreground relative z-10 tabular-nums">
+              {formattedTime}
+            </div>
+          </div>
+
+          <div className="flex gap-4 relative z-10">
+            {!isActive ? (
+              <Button
+                size="lg"
+                onClick={handleStart}
+                disabled={startMutation.isPending}
+                className="h-14 px-8 text-lg rounded-full shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all hover:-translate-y-0.5"
+              >
+                <Play className="mr-2 w-5 h-5 fill-current" />
+                Start Focus
+              </Button>
+            ) : (
+              <Button
+                size="lg"
+                variant="destructive"
+                onClick={handleStop}
+                disabled={stopMutation.isPending}
+                className="h-14 px-8 text-lg rounded-full shadow-lg shadow-destructive/25 hover:shadow-xl hover:shadow-destructive/30 transition-all hover:-translate-y-0.5"
+              >
+                <Square className="mr-2 w-5 h-5 fill-current" />
+                Stop Session
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* History Section */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10 text-primary">
+              <History className="w-5 h-5" />
+            </div>
+            <h2 className="text-2xl font-bold font-display">Recent Sessions</h2>
+          </div>
+
+          <div className="space-y-4">
+            {historyLoading ? (
+              <div className="space-y-4">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="h-20 bg-muted/50 rounded-2xl animate-pulse" />
+                ))}
+              </div>
+            ) : history?.length === 0 ? (
+              <div className="text-center py-12 text-muted-foreground bg-muted/30 rounded-2xl border border-dashed border-border">
+                <Timer className="w-12 h-12 mx-auto mb-3 opacity-20" />
+                <p>No focus sessions yet. Start one now!</p>
+              </div>
+            ) : (
+              history?.map((session) => (
+                <Card key={session.id} className="overflow-hidden hover:border-primary/50 transition-colors duration-200">
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className={cn(
+                        "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
+                        session.completed ? "bg-green-100 text-green-600 dark:bg-green-900/30" : "bg-orange-100 text-orange-600 dark:bg-orange-900/30"
+                      )}>
+                        <Timer className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">
+                          {session.duration} minutes focus
+                        </p>
+                        <p className="text-sm text-muted-foreground">
+                          {session.startTime ? formatDistanceToNow(new Date(session.startTime), { addSuffix: true }) : 'Just now'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className={cn(
+                      "px-3 py-1 rounded-full text-xs font-semibold",
+                      session.completed 
+                        ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" 
+                        : "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400"
+                    )}>
+                      {session.completed ? "Completed" : "Interrupted"}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+        </div>
+      </div>
+    </LayoutShell>
+  );
+}
